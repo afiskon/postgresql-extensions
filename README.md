@@ -1,2 +1,2 @@
-# postgresql-extension
+# postgresql-extensions
 Experiments with PostgreSQL extensions
