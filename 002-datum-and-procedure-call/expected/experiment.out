@@ -1,0 +1,8 @@
+CREATE EXTENSION experiment;
+SELECT timestamp_in_out_test();
+  timestamp_in_out_test   
+--------------------------
+ Fri Aug 05 00:00:00 1988
+(1 row)
+
+DROP EXTENSION experiment;
