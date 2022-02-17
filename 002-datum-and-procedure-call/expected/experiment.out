@@ -2,7 +2,35 @@ CREATE EXTENSION experiment;
 SELECT timestamp_in_out_test();
   timestamp_in_out_test   
 --------------------------
- Fri Aug 05 00:00:00 1988
+ Fri Jan 01 00:00:00 2010
 (1 row)
 
+SELECT timestamptz_zone_test(null);
+ timestamptz_zone_test 
+-----------------------
+ 
+(1 row)
+
+SELECT timestamptz_zone_test('-infinity');
+ timestamptz_zone_test 
+-----------------------
+ -infinity
+(1 row)
+
+SELECT timestamptz_zone_test('2010-01-01 00:00:00 MSK');
+  timestamptz_zone_test   
+--------------------------
+ Fri Jan 01 00:00:00 2010
+(1 row)
+
+SELECT timestamptz_zone_test('2010-01-01 00:00:00 HST', 'Pacific/Honolulu');
+  timestamptz_zone_test   
+--------------------------
+ Fri Jan 01 00:00:00 2010
+(1 row)
+
+\set ON_ERROR_STOP 0
+SELECT timestamptz_zone_test('2010-01-01 00:00:00 GMT', 'Europe/Ololondon');
+ERROR:  time zone "Europe/Ololondon" not recognized
+\set ON_ERROR_STOP 1
 DROP EXTENSION experiment;
