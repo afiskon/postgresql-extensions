@@ -13,11 +13,13 @@ timestamp_in_out_test(PG_FUNCTION_ARGS)
     const char* tstamp_str = "Jan 01 00:00:00 2010";
     Timestamp tstamp;
 
+    // Note: timestamp_in is STABLE!
     tstamp = DatumGetTimestamp(DirectFunctionCall3(timestamp_in,
         CStringGetDatum(tstamp_str),
         ObjectIdGetDatum(InvalidOid),
         Int32GetDatum(-1)));
 
+    // Note: timestamp_out is STABLE!
     tstamp_str = DatumGetCString(DirectFunctionCall1(timestamp_out,
         TimestampGetDatum(tstamp)));
 
