@@ -10,5 +10,8 @@ NOTICE:  Transaction start timestamp: 123456789
 SELECT experiment_ereport('hello');
 ERROR:  Invalid argument "hello"
 HINT:  This is a hint message.
+SELECT experiment_trycatch();
+NOTICE:  cleaning up
+ERROR:  oops...
 \set ON_ERROR_STOP 1
 DROP EXTENSION experiment;
