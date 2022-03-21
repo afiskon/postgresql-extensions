@@ -1,8 +1,14 @@
 CREATE EXTENSION experiment;
-SELECT experiment_hello();
- experiment_hello 
-------------------
- hello
+SELECT experiment_elog();
+NOTICE:  Transaction start timestamp: 123456789
+ experiment_elog 
+-----------------
+ 
 (1 row)
 
+\set ON_ERROR_STOP 0
+SELECT experiment_ereport('hello');
+ERROR:  Invalid argument "hello"
+HINT:  This is a hint message.
+\set ON_ERROR_STOP 1
 DROP EXTENSION experiment;
