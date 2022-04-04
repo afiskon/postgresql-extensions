@@ -5,6 +5,7 @@
 PG_MODULE_MAGIC;
 
 PG_FUNCTION_INFO_V1(experiment_palloc);
+PG_FUNCTION_INFO_V1(experiment_ctxnames);
 PG_FUNCTION_INFO_V1(experiment_memctx);
 PG_FUNCTION_INFO_V1(experiment_tryfinally);
 
@@ -27,6 +28,20 @@ experiment_palloc(PG_FUNCTION_ARGS)
 	fmtstr = psprintf("This is %s example", "psprintf()");
 	elog(NOTICE, "fmtstr = %s", fmtstr);
 
+
+	PG_RETURN_VOID();
+}
+
+Datum
+experiment_ctxnames(PG_FUNCTION_ARGS)
+{
+	MemoryContext ctx = CurrentMemoryContext;
+
+	while(ctx)
+	{
+		elog(NOTICE, "ctx->name = %s", ctx->name);
+		ctx = ctx->parent;
+	}
 
 	PG_RETURN_VOID();
 }

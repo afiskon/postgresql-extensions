@@ -9,6 +9,16 @@ NOTICE:  fmtstr = This is psprintf() example
  
 (1 row)
 
+SELECT experiment_ctxnames();
+NOTICE:  ctx->name = ExprContext
+NOTICE:  ctx->name = ExecutorState
+NOTICE:  ctx->name = MessageContext
+NOTICE:  ctx->name = TopMemoryContext
+ experiment_ctxnames 
+---------------------
+ 
+(1 row)
+
 SELECT experiment_memctx();
 NOTICE:  Memory allocated for cb: 56, sizeof(*cb) = 24
 NOTICE:  Total memory allocated: 8192
