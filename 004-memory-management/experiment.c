@@ -6,6 +6,7 @@ PG_MODULE_MAGIC;
 
 PG_FUNCTION_INFO_V1(experiment_palloc);
 PG_FUNCTION_INFO_V1(experiment_memctx);
+PG_FUNCTION_INFO_V1(experiment_tryfinally);
 
 Datum
 experiment_palloc(PG_FUNCTION_ARGS)
@@ -42,24 +43,52 @@ experiment_memctx(PG_FUNCTION_ARGS)
 	MemoryContextCallback* cb;
 	Size buffsize, totalsize;
 
-	MemoryContext myctx = AllocSetContextCreate(CurrentMemoryContext, "MyCtx", ALLOCSET_DEFAULT_SIZES);
+	MemoryContext myctx = AllocSetContextCreate(CurrentMemoryContext, "MemCtx", ALLOCSET_DEFAULT_SIZES);
 	MemoryContext oldctx = MemoryContextSwitchTo(myctx);
 
 	cb = (MemoryContextCallback*)palloc(sizeof(MemoryContextCallback));
+	cb->func = reset_callback;
+	cb->arg = pstrdup("memctx");
+	MemoryContextRegisterResetCallback(myctx, cb);
+
 	buffsize = GetMemoryChunkSpace(cb);
 	totalsize = MemoryContextMemAllocated(myctx, true /* recursive */);
-
 	elog(NOTICE, "Memory allocated for cb: %lld, sizeof(*cb) = %lld", (long long)buffsize, (long long)sizeof(*cb));
 	elog(NOTICE, "Total memory allocated: %lld", (long long)totalsize);
-
-	cb->func = reset_callback;
-	cb->arg = pstrdup("goodbye");
-	MemoryContextRegisterResetCallback(myctx, cb);
 
 	MemoryContextSwitchTo(oldctx);
 
 	elog(NOTICE, "Calling MemoryContextDelete()...");
 	MemoryContextDelete(myctx);
 	elog(NOTICE, "Returning from experiment_memctx() ...");
+	PG_RETURN_VOID();
+}
+
+Datum
+experiment_tryfinally(PG_FUNCTION_ARGS)
+{
+	bool fail = BoolGetDatum(PG_GETARG_DATUM(0));
+
+	PG_TRY();
+	{
+		MemoryContextCallback* cb;
+		MemoryContext myctx = AllocSetContextCreate(CurrentMemoryContext, "TryCatch", ALLOCSET_DEFAULT_SIZES);
+		/* MemoryContext oldctx = */ MemoryContextSwitchTo(myctx);
+
+		cb = (MemoryContextCallback*)palloc(sizeof(MemoryContextCallback));
+		cb->func = reset_callback;
+		cb->arg = pstrdup("trycatch");
+		MemoryContextRegisterResetCallback(myctx, cb);
+
+		if(fail) {
+			elog(ERROR, "oops...");
+		}
+	}
+	PG_FINALLY();
+	{
+		elog(NOTICE, "cleaning up");
+	}
+	PG_END_TRY();
+
 	PG_RETURN_VOID();
 }

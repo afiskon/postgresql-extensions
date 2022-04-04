@@ -13,10 +13,24 @@ SELECT experiment_memctx();
 NOTICE:  Memory allocated for cb: 56, sizeof(*cb) = 24
 NOTICE:  Total memory allocated: 8192
 NOTICE:  Calling MemoryContextDelete()...
-NOTICE:  reset_callback() called with arg = goodbye
+NOTICE:  reset_callback() called with arg = memctx
 NOTICE:  Returning from experiment_memctx() ...
  experiment_memctx 
 -------------------
+ 
+(1 row)
+
+\set ON_ERROR_STOP 0
+SELECT experiment_tryfinally(fail => true);
+NOTICE:  cleaning up
+NOTICE:  reset_callback() called with arg = trycatch
+ERROR:  oops...
+\set ON_ERROR_STOP 1
+SELECT experiment_tryfinally(fail => false);
+NOTICE:  cleaning up
+NOTICE:  reset_callback() called with arg = trycatch
+ experiment_tryfinally 
+-----------------------
  
 (1 row)
 
