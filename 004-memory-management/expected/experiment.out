@@ -1,0 +1,8 @@
+CREATE EXTENSION experiment;
+SELECT experiment_hello();
+ experiment_hello 
+------------------
+ hello
+(1 row)
+
+DROP EXTENSION experiment;
