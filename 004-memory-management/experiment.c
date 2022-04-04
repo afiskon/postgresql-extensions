@@ -84,6 +84,10 @@ experiment_tryfinally(PG_FUNCTION_ARGS)
 {
 	bool fail = BoolGetDatum(PG_GETARG_DATUM(0));
 
+	/*
+	 * Make sure the memory context will be deleted even if an exception
+	 * will be thrown.
+	 */
 	PG_TRY();
 	{
 		MemoryContextCallback* cb;
