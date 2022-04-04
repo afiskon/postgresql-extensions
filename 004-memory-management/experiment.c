@@ -39,6 +39,7 @@ experiment_ctxnames(PG_FUNCTION_ARGS)
 
 	while(ctx)
 	{
+		/* see src/include/nodes/memnodes.h, MemoryContextData */
 		elog(NOTICE, "ctx->name = %s", ctx->name);
 		ctx = ctx->parent;
 	}
