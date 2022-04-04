@@ -1,5 +1,5 @@
 CREATE EXTENSION experiment;
 
-SELECT experiment_hello();
+SELECT experiment_palloc();
 
 DROP EXTENSION experiment;

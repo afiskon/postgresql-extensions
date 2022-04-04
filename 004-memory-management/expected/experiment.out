@@ -1,8 +1,12 @@
 CREATE EXTENSION experiment;
-SELECT experiment_hello();
- experiment_hello 
-------------------
- hello
+SELECT experiment_palloc();
+NOTICE:  mybuff after palloc() = test data
+NOTICE:  mybuff after repalloc() = test data
+NOTICE:  byffcopy = test data
+NOTICE:  fmtstr = This is psprintf() example
+ experiment_palloc 
+-------------------
+ 
 (1 row)
 
 DROP EXTENSION experiment;
