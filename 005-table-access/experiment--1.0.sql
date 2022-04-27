@@ -1,7 +1,7 @@
 -- complain if script is sourced in psql, rather than via CREATE EXTENSION
 \echo Use "CREATE EXTENSION experiment" to load this file. \quit
 
-CREATE TABLE phonebook(id SERIAL PRIMARY KEY, name NAME, phone INT);
+CREATE TABLE phonebook(id SERIAL PRIMARY KEY NOT NULL, name NAME NOT NULL, phone INT NOT NULL);
 CREATE INDEX phonebook_name_idx ON phonebook USING btree(name);
 
 CREATE OR REPLACE FUNCTION phonebook_insert(name NAME, phone INT) RETURNS INT
