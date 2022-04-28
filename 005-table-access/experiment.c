@@ -18,6 +18,10 @@ PG_FUNCTION_INFO_V1(phonebook_delete_simple);
 PG_FUNCTION_INFO_V1(phonebook_lookup_seqscan_deform);
 PG_FUNCTION_INFO_V1(phonebook_lookup_index);
 
+#define PHONEBOOK_TABLE_NAME "phonebook"
+#define PHONEBOOK_PKEY_SEQ_NAME "phonebook_id_seq"
+#define PHONEBOOK_NAME_IDX_NAME "phonebook_name_idx"
+
 typedef struct FormData_phonebook
 {
 	int32 id;
@@ -26,10 +30,6 @@ typedef struct FormData_phonebook
 } FormData_phonebook;
 
 typedef FormData_phonebook* Form_phonebook;
-
-#define PHONEBOOK_TABLE_NAME "phonebook"
-#define PHONEBOOK_PKEY_SEQ_NAME "phonebook_id_seq"
-#define PHONEBOOK_NAME_IDX_NAME "phonebook_name_idx"
 
 typedef enum Anum_phonebook
 {
