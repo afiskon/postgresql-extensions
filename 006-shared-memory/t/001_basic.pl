@@ -18,8 +18,8 @@ $node->safe_psql("postgres",
 	    "CREATE EXTENSION experiment;\n");
 
 my $result =
-  $node->safe_psql("postgres", "SELECT experiment_hello();");
-ok($result eq "hello", 'experiment_hello() test succeeded');
+  $node->safe_psql("postgres", "SELECT experiment_get_message();");
+ok($result eq "hello", 'experiment_get_message() test succeeded');
 
 $node->safe_psql("postgres",
 	    "DROP EXTENSION experiment;\n");
