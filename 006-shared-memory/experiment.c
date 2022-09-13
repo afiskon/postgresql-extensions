@@ -11,6 +11,7 @@ static shmem_startup_hook_type prev_shmem_startup_hook = NULL;
 PG_MODULE_MAGIC;
 PG_FUNCTION_INFO_V1(experiment_get_message);
 PG_FUNCTION_INFO_V1(experiment_set_message);
+PG_FUNCTION_INFO_V1(experiment_lock_and_throw_error);
 
 #define MESSAGE_BUFF_SIZE 128
 typedef struct SharedStruct {
@@ -91,6 +92,17 @@ experiment_set_message(PG_FUNCTION_ARGS)
 	LWLockAcquire(sharedStructLock, LW_EXCLUSIVE);
 	strncpy(sharedStruct->message, msg, MESSAGE_BUFF_SIZE-1);
 	LWLockRelease(sharedStructLock);
+
+	PG_RETURN_VOID();
+}
+
+/* Make sure the lock will be released if we throw an error */
+Datum
+experiment_lock_and_throw_error(PG_FUNCTION_ARGS)
+{
+	LWLockAcquire(sharedStructLock, LW_EXCLUSIVE);
+
+	elog(ERROR, "error");
 
 	PG_RETURN_VOID();
 }
