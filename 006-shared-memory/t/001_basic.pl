@@ -6,23 +6,24 @@ use PostgreSQL::Test::Cluster;
 use PostgreSQL::Test::Utils;
 use Test::More;
 
+my $result;
 my $node = PostgreSQL::Test::Cluster->new('main');
 
 $node->init;
-$node->append_conf(
-	'postgresql.conf',
-	qq{shared_preload_libraries = 'experiment'});
+$node->append_conf('postgresql.conf', qq{shared_preload_libraries = 'experiment'});
 $node->start;
 
-$node->safe_psql("postgres",
-	    "CREATE EXTENSION experiment;\n");
+$node->safe_psql("postgres", "CREATE EXTENSION experiment;");
 
-my $result =
-  $node->safe_psql("postgres", "SELECT experiment_get_message();");
+$result = $node->safe_psql("postgres", "SELECT experiment_get_message();");
+ok($result eq "", 'experiment_get_message() test succeeded');
+
+$node->safe_psql("postgres", "SELECT experiment_set_message('hello');");
+
+$result = $node->safe_psql("postgres", "SELECT experiment_get_message();");
 ok($result eq "hello", 'experiment_get_message() test succeeded');
 
-$node->safe_psql("postgres",
-	    "DROP EXTENSION experiment;\n");
+$node->safe_psql("postgres", "DROP EXTENSION experiment;");
 
 $node->stop;
 

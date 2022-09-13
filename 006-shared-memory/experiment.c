@@ -10,12 +10,15 @@ static shmem_startup_hook_type prev_shmem_startup_hook = NULL;
 
 PG_MODULE_MAGIC;
 PG_FUNCTION_INFO_V1(experiment_get_message);
+PG_FUNCTION_INFO_V1(experiment_set_message);
 
+#define MESSAGE_BUFF_SIZE 128
 typedef struct SharedStruct {
-	char message[128];
+	char message[MESSAGE_BUFF_SIZE];
 } SharedStruct;
 
-SharedStruct *sharedStruct = NULL;
+LWLock* sharedStructLock;
+SharedStruct *sharedStruct;
 
 static void
 experiment_shmem_request(void)
@@ -24,6 +27,8 @@ experiment_shmem_request(void)
 		prev_shmem_request_hook();
 
 	RequestAddinShmemSpace(MAXALIGN(sizeof(SharedStruct)));
+
+	RequestNamedLWLockTranche("experiment", 1);
 }
 
 static void
@@ -43,7 +48,9 @@ experiment_shmem_startup(void)
 
 	sharedStruct = ShmemInitStruct("SharedStruct", sizeof(SharedStruct), &found);
 	if(!found) {
-		strcpy(sharedStruct->message, "Hello from shared memory!");
+		sharedStruct->message[0] = '\0';
+
+		sharedStructLock = &(GetNamedLWLockTranche("experiment"))->lock;
 	}
 
 	LWLockRelease(AddinShmemInitLock);
@@ -67,5 +74,23 @@ _PG_init(void)
 Datum
 experiment_get_message(PG_FUNCTION_ARGS)
 {
-	PG_RETURN_TEXT_P(cstring_to_text("hello"));
+	text* result;
+
+	LWLockAcquire(sharedStructLock, LW_SHARED);
+	result = cstring_to_text(sharedStruct->message);
+	LWLockRelease(sharedStructLock);
+
+	PG_RETURN_TEXT_P(result);
+}
+
+Datum
+experiment_set_message(PG_FUNCTION_ARGS)
+{
+	const char* msg = TextDatumGetCString(PG_GETARG_DATUM(0));
+
+	LWLockAcquire(sharedStructLock, LW_EXCLUSIVE);
+	strncpy(sharedStruct->message, msg, MESSAGE_BUFF_SIZE-1);
+	LWLockRelease(sharedStructLock);
+
+	PG_RETURN_VOID();
 }
