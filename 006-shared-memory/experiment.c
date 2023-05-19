@@ -18,8 +18,8 @@ typedef struct SharedStruct {
 	char message[MESSAGE_BUFF_SIZE];
 } SharedStruct;
 
-LWLock* sharedStructLock;
-SharedStruct *sharedStruct;
+LWLock* sharedStructLock = NULL;
+SharedStruct *sharedStruct = NULL;
 
 static void
 experiment_shmem_request(void)
@@ -77,6 +77,9 @@ experiment_get_message(PG_FUNCTION_ARGS)
 {
 	text* result;
 
+	Assert(sharedStructLock != NULL);
+	Assert(sharedStruct != NULL);
+
 	LWLockAcquire(sharedStructLock, LW_SHARED);
 	result = cstring_to_text(sharedStruct->message);
 	LWLockRelease(sharedStructLock);
@@ -89,6 +92,9 @@ experiment_set_message(PG_FUNCTION_ARGS)
 {
 	const char* msg = TextDatumGetCString(PG_GETARG_DATUM(0));
 
+	Assert(sharedStructLock != NULL);
+	Assert(sharedStruct != NULL);
+
 	LWLockAcquire(sharedStructLock, LW_EXCLUSIVE);
 	strncpy(sharedStruct->message, msg, MESSAGE_BUFF_SIZE-1);
 	LWLockRelease(sharedStructLock);
@@ -100,6 +106,7 @@ experiment_set_message(PG_FUNCTION_ARGS)
 Datum
 experiment_lock_and_throw_error(PG_FUNCTION_ARGS)
 {
+	Assert(sharedStructLock != NULL);
 	LWLockAcquire(sharedStructLock, LW_EXCLUSIVE);
 
 	elog(ERROR, "error");
