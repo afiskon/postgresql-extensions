@@ -51,7 +51,8 @@ experiment_shmem_startup(void)
 	 * ShmemInitStruct() and so does the example code in pg_stat_statements.c.
 	 *
 	 * I suspect this may be redundant in this particular case since actually
-	 * shmem_startup_hook is called by postmaster.
+	 * shmem_startup_hook is called by postmaster before fork()'ing any other
+	 * processes.
 	 */
 	LWLockAcquire(AddinShmemInitLock, LW_EXCLUSIVE);
 
