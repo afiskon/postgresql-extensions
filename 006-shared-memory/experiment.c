@@ -24,6 +24,9 @@ SharedStruct *sharedStruct = NULL;
 static void
 experiment_shmem_request(void)
 {
+	elog(LOG, "experiment_shmem_request(): pid = %d, postmaster = %d\n",
+		MyProcPid, !IsUnderPostmaster);
+
 	if(prev_shmem_request_hook)
 		prev_shmem_request_hook();
 
@@ -37,20 +40,32 @@ experiment_shmem_startup(void)
 {
 	bool found;
 
+	elog(LOG, "experiment_shmem_startup(): pid = %d, postmaster = %d\n",
+		MyProcPid, !IsUnderPostmaster);
+
 	if(prev_shmem_startup_hook)
 		prev_shmem_startup_hook();
 
 	/*
-	 * This callback can be called several times, see the comments for
-	 * CreateSharedMemoryAndSemaphores(). In order to play it save we have
-	 * to take the lock.
+     * The documentation recommends taking AddinShmemInitLock before calling
+     * ShmemInitStruct() and so does the example code in pg_stat_statements.c.
+     *
+     * I suspect this may be redundant in this particular case since actually
+     * shmem_startup_hook is called by postmaster.
 	 */
 	LWLockAcquire(AddinShmemInitLock, LW_EXCLUSIVE);
 
 	sharedStruct = ShmemInitStruct("SharedStruct", sizeof(SharedStruct), &found);
 	if(!found) {
 		sharedStruct->message[0] = '\0';
-
+        /*
+         * If in doubt, better place LWLock* within a structure in shared memory.
+         * To my knowledge the presented code is safe, at least at the moment of
+         * writing. However this is not how the documentation recommends doing this.
+         *
+         * See the discussion:
+         * https://postgr.es/m/CAJ7c6TPKhFgL%2B54cdTD9yGpG4%2BsNcyJ%2BN1GvQqAxgWENAOa3VA%40mail.gmail.com
+         */
 		sharedStructLock = &(GetNamedLWLockTranche("experiment"))->lock;
 	}
 
@@ -63,7 +78,7 @@ _PG_init(void)
 	if(!process_shared_preload_libraries_in_progress)
 		elog(FATAL, "Please use shared_preload_libraries");
 
-	elog(LOG, "extension loaded");
+	elog(LOG, "_PG_init(): extension loaded");
 
 	prev_shmem_request_hook = shmem_request_hook;
 	shmem_request_hook = experiment_shmem_request;
