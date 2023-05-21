@@ -47,11 +47,11 @@ experiment_shmem_startup(void)
 		prev_shmem_startup_hook();
 
 	/*
-     * The documentation recommends taking AddinShmemInitLock before calling
-     * ShmemInitStruct() and so does the example code in pg_stat_statements.c.
-     *
-     * I suspect this may be redundant in this particular case since actually
-     * shmem_startup_hook is called by postmaster.
+	 * The documentation recommends taking AddinShmemInitLock before calling
+	 * ShmemInitStruct() and so does the example code in pg_stat_statements.c.
+	 *
+	 * I suspect this may be redundant in this particular case since actually
+	 * shmem_startup_hook is called by postmaster.
 	 */
 	LWLockAcquire(AddinShmemInitLock, LW_EXCLUSIVE);
 
