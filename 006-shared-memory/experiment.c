@@ -58,14 +58,14 @@ experiment_shmem_startup(void)
 	sharedStruct = ShmemInitStruct("SharedStruct", sizeof(SharedStruct), &found);
 	if(!found) {
 		sharedStruct->message[0] = '\0';
-        /*
-         * If in doubt, better place LWLock* within a structure in shared memory.
-         * To my knowledge the presented code is safe, at least at the moment of
-         * writing. However this is not how the documentation recommends doing this.
-         *
-         * See the discussion:
-         * https://postgr.es/m/CAJ7c6TPKhFgL%2B54cdTD9yGpG4%2BsNcyJ%2BN1GvQqAxgWENAOa3VA%40mail.gmail.com
-         */
+		/*
+		 * If in doubt, better place LWLock* within a structure in shared memory.
+		 * To my knowledge the presented code is safe, at least at the moment of
+		 * writing. However this is not how the documentation recommends doing this.
+		 *
+		 * See the discussion:
+		 * https://postgr.es/m/CAJ7c6TPKhFgL%2B54cdTD9yGpG4%2BsNcyJ%2BN1GvQqAxgWENAOa3VA%40mail.gmail.com
+		 */
 		sharedStructLock = &(GetNamedLWLockTranche("experiment"))->lock;
 	}
 
