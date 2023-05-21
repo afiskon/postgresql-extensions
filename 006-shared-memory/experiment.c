@@ -79,7 +79,8 @@ _PG_init(void)
 	if(!process_shared_preload_libraries_in_progress)
 		elog(FATAL, "Please use shared_preload_libraries");
 
-	elog(LOG, "_PG_init(): extension loaded");
+	elog(LOG, "_PG_init(): pid = %d, postmaster = %d",
+		MyProcPid, !IsUnderPostmaster);
 
 	prev_shmem_request_hook = shmem_request_hook;
 	shmem_request_hook = experiment_shmem_request;
