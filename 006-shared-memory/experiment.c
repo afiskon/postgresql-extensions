@@ -13,12 +13,12 @@ PG_FUNCTION_INFO_V1(experiment_get_message);
 PG_FUNCTION_INFO_V1(experiment_set_message);
 PG_FUNCTION_INFO_V1(experiment_lock_and_throw_error);
 
-#define MESSAGE_BUFF_SIZE 128
+#define MESSAGE_BUFF_SIZE 100
 typedef struct SharedStruct {
+	LWLock* lock;
 	char message[MESSAGE_BUFF_SIZE];
 } SharedStruct;
 
-LWLock* sharedStructLock = NULL;
 SharedStruct *sharedStruct = NULL;
 
 static void
@@ -47,27 +47,16 @@ experiment_shmem_startup(void)
 		prev_shmem_startup_hook();
 
 	/*
-	 * The documentation recommends taking AddinShmemInitLock before calling
-	 * ShmemInitStruct() and so does the example code in pg_stat_statements.c.
-	 *
-	 * I suspect this may be redundant in this particular case since actually
-	 * shmem_startup_hook is called by postmaster before fork()'ing any other
-	 * processes.
+	 * Acquiring AddinShmemInitLock and storing LWLock* in shared memory is
+	 * _mondatory_ in order for the code to work on all supported platforms
+	 * including Windows.
 	 */
 	LWLockAcquire(AddinShmemInitLock, LW_EXCLUSIVE);
 
 	sharedStruct = ShmemInitStruct("SharedStruct", sizeof(SharedStruct), &found);
 	if(!found) {
 		sharedStruct->message[0] = '\0';
-		/*
-		 * If in doubt, better place LWLock* within a structure in shared memory.
-		 * To my knowledge the presented code is safe, at least at the moment of
-		 * writing. However this is not how the documentation recommends doing this.
-		 *
-		 * See the discussion:
-		 * https://postgr.es/m/CAJ7c6TPKhFgL%2B54cdTD9yGpG4%2BsNcyJ%2BN1GvQqAxgWENAOa3VA%40mail.gmail.com
-		 */
-		sharedStructLock = &(GetNamedLWLockTranche("experiment"))->lock;
+		sharedStruct->lock = &(GetNamedLWLockTranche("experiment"))->lock;
 	}
 
 	LWLockRelease(AddinShmemInitLock);
@@ -94,12 +83,11 @@ experiment_get_message(PG_FUNCTION_ARGS)
 {
 	text* result;
 
-	Assert(sharedStructLock != NULL);
 	Assert(sharedStruct != NULL);
 
-	LWLockAcquire(sharedStructLock, LW_SHARED);
+	LWLockAcquire(sharedStruct->lock, LW_SHARED);
 	result = cstring_to_text(sharedStruct->message);
-	LWLockRelease(sharedStructLock);
+	LWLockRelease(sharedStruct->lock);
 
 	PG_RETURN_TEXT_P(result);
 }
@@ -109,12 +97,11 @@ experiment_set_message(PG_FUNCTION_ARGS)
 {
 	const char* msg = TextDatumGetCString(PG_GETARG_DATUM(0));
 
-	Assert(sharedStructLock != NULL);
 	Assert(sharedStruct != NULL);
 
-	LWLockAcquire(sharedStructLock, LW_EXCLUSIVE);
+	LWLockAcquire(sharedStruct->lock, LW_EXCLUSIVE);
 	strncpy(sharedStruct->message, msg, MESSAGE_BUFF_SIZE-1);
-	LWLockRelease(sharedStructLock);
+	LWLockRelease(sharedStruct->lock);
 
 	PG_RETURN_VOID();
 }
@@ -123,8 +110,8 @@ experiment_set_message(PG_FUNCTION_ARGS)
 Datum
 experiment_lock_and_throw_error(PG_FUNCTION_ARGS)
 {
-	Assert(sharedStructLock != NULL);
-	LWLockAcquire(sharedStructLock, LW_EXCLUSIVE);
+	Assert(sharedStruct != NULL);
+	LWLockAcquire(sharedStruct->lock, LW_EXCLUSIVE);
 
 	elog(ERROR, "error");
 
