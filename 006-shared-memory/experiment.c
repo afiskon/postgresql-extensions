@@ -47,16 +47,18 @@ experiment_shmem_startup(void)
 		prev_shmem_startup_hook();
 
 	/*
-	 * Acquiring AddinShmemInitLock and storing LWLock* in shared memory is
-	 * _mondatory_ in order for the code to work on all supported platforms
-	 * including Windows.
+	 * Acquiring AddinShmemInitLock is mandatory in order for the code
+	 * to work on all supported platforms including Windows.
+	 * This is also the reason why `lock` is part of `sharedStruct`.
 	 */
+
 	LWLockAcquire(AddinShmemInitLock, LW_EXCLUSIVE);
 
 	sharedStruct = ShmemInitStruct("SharedStruct", sizeof(SharedStruct), &found);
 	if(!found) {
 		sharedStruct->message[0] = '\0';
-		sharedStruct->lock = &(GetNamedLWLockTranche("experiment"))->lock;
+		sharedStruct->lock =
+			&(GetNamedLWLockTranche("experiment"))->lock;
 	}
 
 	LWLockRelease(AddinShmemInitLock);
