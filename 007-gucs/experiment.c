@@ -22,7 +22,7 @@ _PG_init(void)
 							   NULL, /* long desc */
 							   &message,
 							   ""    /* initial value */,
-							   PGC_POSTMASTER,
+							   PGC_USERSET,
 							   0,    /* flags */
 							   NULL, /* check hook */
 							   NULL, /* assign hook */
