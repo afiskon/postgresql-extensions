@@ -1,11 +1,11 @@
 EXTENSION = experiment
 MODULES = experiment
-DATA = experiment--1.0.sql experiment.conf
-REGRESS_OPTS = --temp-config $(top_srcdir)/../../../share/postgresql/extension/experiment.conf
-REGRESS = experiment
+DATA = experiment--1.0.sql
 
 PG_CPPFLAGS = -g -O0
 SHLIB_LINK = 
+
+TAP_TESTS = 1
 
 ifndef PG_CONFIG
 	PG_CONFIG := pg_config

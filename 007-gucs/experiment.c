@@ -4,7 +4,7 @@
 #include <utils/guc.h>
 
 PG_MODULE_MAGIC;
-PG_FUNCTION_INFO_V1(experiment_message);
+PG_FUNCTION_INFO_V1(experiment_get_message);
 
 static char *message = NULL;
 
@@ -18,10 +18,10 @@ _PG_init(void)
 		MyProcPid, !IsUnderPostmaster);
 
 	DefineCustomStringVariable("experiment.message",
-							   "Message to return via experiment_message()",
+							   "Message to return via experiment_get_message()",
 							   NULL, /* long desc */
 							   &message,
-							   "(default message)",
+							   ""    /* initial value */,
 							   PGC_POSTMASTER,
 							   0,    /* flags */
 							   NULL, /* check hook */
@@ -32,7 +32,7 @@ _PG_init(void)
 }
 
 Datum
-experiment_message(PG_FUNCTION_ARGS)
+experiment_get_message(PG_FUNCTION_ARGS)
 {
 	PG_RETURN_TEXT_P(cstring_to_text(message));
 }
