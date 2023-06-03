@@ -19,13 +19,13 @@ _PG_init(void)
 
 	DefineCustomStringVariable("experiment.message",
 							   "Message to return via experiment_get_message()",
-							   NULL, /* long desc */
+							   NULL,  /* long desc */
 							   &message,
-							   ""    /* initial value */,
+							   "",    /* initial value */
 							   PGC_USERSET,
-							   0,    /* flags */
-							   NULL, /* check hook */
-							   NULL, /* assign hook */
+							   0,     /* flags */
+							   NULL,  /* check hook */
+							   NULL,  /* assign hook */
 							   NULL); /* show hook */
 
 	MarkGUCPrefixReserved("experiment");
