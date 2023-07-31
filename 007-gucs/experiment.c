@@ -11,12 +11,6 @@ static char *message = NULL;
 void
 _PG_init(void)
 {
-/* - using shared_preload_libraries is not necessary
-
-	if(!process_shared_preload_libraries_in_progress)
-		elog(FATAL, "Please use shared_preload_libraries");
-
-*/
 	elog(LOG, "_PG_init(): pid = %d, postmaster = %d",
 		MyProcPid, !IsUnderPostmaster);
 

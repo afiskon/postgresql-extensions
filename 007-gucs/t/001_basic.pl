@@ -11,7 +11,6 @@ my $cmdret;
 my $node = PostgreSQL::Test::Cluster->new('main');
 
 $node->init;
-# $node->append_conf('postgresql.conf', qq{shared_preload_libraries = 'experiment'});
 $node->append_conf('postgresql.conf', qq{experiment.message = 'ololotrololo'});
 $node->start;
 
