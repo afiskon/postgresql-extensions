@@ -1,8 +1,6 @@
 #include "postgres_ext.h"
 #include <postgres.h>
 #include <utils/builtins.h>
-#include <utils/array.h>
-#include <catalog/pg_type_d.h>
 #include <utils/typcache.h>
 
 PG_MODULE_MAGIC;
