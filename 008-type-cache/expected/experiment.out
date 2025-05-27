@@ -1,0 +1,26 @@
+CREATE EXTENSION experiment;
+SELECT experiment_max(1, 2);
+ experiment_max 
+----------------
+              2
+(1 row)
+
+SELECT experiment_max(true, false);
+ experiment_max 
+----------------
+ t
+(1 row)
+
+SELECT experiment_max('aaa', 'bbb' :: text COLLATE "C");
+ experiment_max 
+----------------
+ bbb
+(1 row)
+
+SELECT experiment_max('{1,2,3}', '{4,5,6}' :: int[]);
+ experiment_max 
+----------------
+ {4,5,6}
+(1 row)
+
+DROP EXTENSION experiment;

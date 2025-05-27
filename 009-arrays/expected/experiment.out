@@ -1,0 +1,134 @@
+CREATE EXTENSION experiment;
+SELECT experiment_sum('{}' :: int[]);
+ experiment_sum 
+----------------
+              0
+(1 row)
+
+SELECT experiment_sum('{NULL}' :: int[]);
+ experiment_sum 
+----------------
+              0
+(1 row)
+
+SELECT experiment_sum('{1}' :: int[]);
+ experiment_sum 
+----------------
+              1
+(1 row)
+
+SELECT experiment_sum('{1,2,3}' :: int[]);
+ experiment_sum 
+----------------
+              6
+(1 row)
+
+SELECT experiment_sum('{1,NULL,3}' :: int[]);
+ experiment_sum 
+----------------
+              4
+(1 row)
+
+SELECT experiment_sum('[-1:1]={1,2,3}'::int[]);
+ experiment_sum 
+----------------
+              6
+(1 row)
+
+SELECT experiment_sum('{{1,2,3},{4,5,6}}'::int[]); -- error
+ERROR:  multi-dimensional arrays are not supported
+SELECT experiment_max('{}' :: int[]);
+ experiment_max 
+----------------
+               
+(1 row)
+
+SELECT experiment_max('{NULL}' :: int[]);
+ experiment_max 
+----------------
+               
+(1 row)
+
+SELECT experiment_max('{1}' :: int[]);
+ experiment_max 
+----------------
+              1
+(1 row)
+
+SELECT experiment_max('{1,3,2}' :: int[]);
+ experiment_max 
+----------------
+              3
+(1 row)
+
+SELECT experiment_max('{1,NULL,3}' :: int[]);
+ experiment_max 
+----------------
+              3
+(1 row)
+
+SELECT experiment_max('[-1:1]={3,2,1}'::int[]);
+ experiment_max 
+----------------
+              3
+(1 row)
+
+SELECT experiment_max('{}' :: text[] COLLATE "C");
+ experiment_max 
+----------------
+ 
+(1 row)
+
+SELECT experiment_max('{NULL}' :: text[] COLLATE "C");
+ experiment_max 
+----------------
+ 
+(1 row)
+
+SELECT experiment_max('{"a"}' :: text[] COLLATE "C");
+ experiment_max 
+----------------
+ a
+(1 row)
+
+SELECT experiment_max('{"aa","cc","bb"}' :: text[] COLLATE "C");
+ experiment_max 
+----------------
+ cc
+(1 row)
+
+SELECT experiment_max('{"a",NULL,"c"}' :: text[] COLLATE "C");
+ experiment_max 
+----------------
+ c
+(1 row)
+
+SELECT experiment_max('[-1:1]={"cc","bb","aa"}'::text[] COLLATE "C");
+ experiment_max 
+----------------
+ cc
+(1 row)
+
+SELECT experiment_max('{{1,2,3},{4,5,6}}'::int[]); -- error
+ERROR:  multi-dimensional arrays are not supported
+SELECT experiment_repeat(1, 0);
+ experiment_repeat 
+-------------------
+ {}
+(1 row)
+
+SELECT experiment_repeat(1, 3);
+ experiment_repeat 
+-------------------
+ {1,1,1}
+(1 row)
+
+SELECT experiment_repeat('hello' :: text, 3);
+  experiment_repeat  
+---------------------
+ {hello,hello,hello}
+(1 row)
+
+SELECT experiment_repeat(1, -1); -- error
+ERROR:  count must not be negative
+DROP EXTENSION experiment;
