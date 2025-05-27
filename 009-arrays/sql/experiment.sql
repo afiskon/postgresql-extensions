@@ -23,7 +23,6 @@ SELECT experiment_max('{"a",NULL,"c"}' :: text[] COLLATE "C");
 SELECT experiment_max('[-1:1]={"cc","bb","aa"}'::text[] COLLATE "C");
 SELECT experiment_max('{{1,2,3},{4,5,6}}'::int[]); -- error
 
-
 SELECT experiment_repeat(1, 0);
 SELECT experiment_repeat(1, 3);
 SELECT experiment_repeat('hello' :: text, 3);
