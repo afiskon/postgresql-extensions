@@ -19,6 +19,7 @@ experiment_max(PG_FUNCTION_ARGS)
     typentry = (TypeCacheEntry *) fcinfo->flinfo->fn_extra;
     if (typentry == NULL || typentry->type_id != elmtyp)
     {
+        /* elog(WARNING, "lookup_type_cache() called"); */
         typentry = lookup_type_cache(elmtyp, TYPECACHE_CMP_PROC_FINFO);
         fcinfo->flinfo->fn_extra = (void *) typentry;
     }
