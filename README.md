@@ -15,3 +15,18 @@ Corresponding articles (in Russian):
 See also:
 
 - https://eax.me/postgresql-background-workers/
+
+Related articles about PostgreSQL internals in general:
+
+- https://eax.me/postgresql-data-layout/
+- https://eax.me/postgresql-toast/
+- https://eax.me/postgresql-procarray-clog/
+- https://eax.me/postgresql-shared-buffers/
+- https://eax.me/postgresql-wal/
+- https://eax.me/postgresql-xid-wraparound/
+- https://eax.me/postgresql-visibility-map/
+- https://eax.me/postgresql-free-space-map/
+- https://eax.me/postgresql-syscache/
+- https://eax.me/postgresql-add-function/
+- https://eax.me/postgresql-portal/
+- https://eax.me/postgresql-protocol/
