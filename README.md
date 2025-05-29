@@ -11,3 +11,7 @@ Corresponding articles (in Russian):
 6. https://eax.me/postgresql-shmem-locks/
 7. https://eax.me/postgresql-extensions-guc/
 8. https://eax.me/postgresql-type-cache/
+
+See also:
+
+- https://eax.me/postgresql-background-workers/
