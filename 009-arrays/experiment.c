@@ -60,6 +60,9 @@ experiment_sum(PG_FUNCTION_ARGS)
             sum += DatumGetInt32(elmvalues[i]);
     }
 
+    pfree(elmvalues);
+    pfree(elmnulls);
+
     PG_RETURN_INT32(sum);
 }
 
@@ -121,6 +124,9 @@ experiment_max(PG_FUNCTION_ARGS)
             result = elmvalues[i];
     }
 
+    pfree(elmvalues);
+    pfree(elmnulls);
+
     if(resnull)
         PG_RETURN_NULL();
 
@@ -165,5 +171,7 @@ experiment_repeat(PG_FUNCTION_ARGS)
     lbs[0] = 1; /* array lower bounds */
     result = construct_md_array(elems, NULL, 1, dims, lbs, elmtyp,
         typentry->typlen, typentry->typbyval, typentry->typalign);
+
+    pfree(elems);
     PG_RETURN_ARRAYTYPE_P(result);
 }
