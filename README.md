@@ -15,6 +15,7 @@ Corresponding articles (in Russian):
 
 See also:
 
+- https://eax.me/2017/2017-01-16-libpq.html
 - https://eax.me/2023/2023-06-19-postgresql-background-workers.html
 
 Related articles about PostgreSQL internals in general:
